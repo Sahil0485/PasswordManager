@@ -1,8 +1,5 @@
 import React, { useEffect } from 'react'
 import { useRef, useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-
-import 'react-toastify/dist/ReactToastify.css';
 
 const Manager = () => {
     const ref = useRef()
@@ -11,19 +8,19 @@ const Manager = () => {
     const [form, setform] = useState({ site: "", username: "", password: "" })
     const [passwordarray, setpasswordarray] = useState([])
 
-    const getpassword = async () => {
-        let req = await fetch("http://localhost:3000/")
-        let passwords = await req.json()
-        setpasswordarray(JSON.parse(passwords))
-        console.log(password)
-    }
-    
+    // const getpassword = async () => {
+    //     let req = await fetch("http://localhost:3000/")
+    //     let passwords = await req.json()
+    //     setpasswordarray(JSON.parse(passwords))
+    //     console.log(password)
+    // }
+
 
     useEffect(() => {
-        // let passwords = localStorage.getItem("passwords");
-        // if (passwords) {
-        // setpasswordarray(JSON.parse(passwords))
-        // }
+        let passwords = localStorage.getItem("passwords");
+        if (passwords) {
+            setpasswordarray(JSON.parse(passwords))
+        }
     }, [])
 
 
@@ -39,14 +36,20 @@ const Manager = () => {
     }
 
     const savepassword = async () => {
-        if(form.site.length > 3 && form.username.length > 3 && form.password.length > 3){
-        setpasswordarray([...passwordarray, form])
-        let res = await fetch("http://localhost:3000/", {method: "POST", header: {"content-type": "application/json"}, body: JSON.stringify({...passwordarray, form}) })
-        // localStorage.setItem("passwords", JSON.stringify([...passwordarray, form]))
-        // console.log([...passwordarray, form])
-        }else{
+        if (form.site.length > 3 && form.username.length > 3 && form.password.length > 3) {
+            setpasswordarray([...passwordarray, form])
+            // let res = await fetch("http://localhost:3000/", {method: "POST", header: {"content-type": "application/json"}, body: JSON.stringify({...passwordarray, form}) })
+            // console.log(res)
+            localStorage.setItem("passwords", JSON.stringify([...passwordarray, form]))
+            console.log([...passwordarray, form])
+        } else {
             alert("Enter correct information")
         }
+    }
+
+    const deletePassword = (site) => {
+        setpasswordarray(passwordarray.filter(item => item.site !== site))
+        localStorage.setItem("passwords", JSON.stringify(passwordarray.filter(item => item.site !== site)))
     }
 
     const handlechange = (e) => {
@@ -54,38 +57,14 @@ const Manager = () => {
     }
 
     const copytext = (text) => {
-        toast('copied to clipboard', {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-        });
         navigator.clipboard.writeText(text)
+            .catch(err => {
+                alert('Error copying text: ', err);
+            });
     }
-
 
     return (
         <>
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-                transition="Bounce"
-            />
-            {/* Same as */}
-            <ToastContainer />
             <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]"><div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_800px_at_100%_200px,#d5c5ff,transparent)]"></div></div>
             <div className="bg-slate-50 max-w-4xl p-2 md:p-0 md:myconatiner min-h-[77.6vh]">
                 <h1 className='text-4xl font-bold text-center'>
@@ -127,10 +106,10 @@ const Manager = () => {
                                 {passwordarray.map((item, index) => {
 
                                     return <tr key={index}>
-                                        <td className='text-center py-2 border-white w-32'><a href="{item.site}" target='_blank'>{item.site}</a><button onClick={() => { copytext(item.site) }}>copy</button></td>
-                                        <td className='text-center py-2 border-white w-32'>{item.username} <button onClick={() => { copytext(item.username) }}>copy</button></td>
-                                        <td className='text-center py-2 border-white w-32'>{"*".repeat(item.password.length)} <button onClick={() => { copytext(item.password) }}>copy</button></td>
-                                        <td className='text-center py-2 border-white w-32'>Edit / Delete</td>
+                                        <td className='text-center py-2 border-white w-32'><a href="{item.site}" target='_blank'>{item.site}</a><button className='border-2 border-white-900 bg-green-200 rounded-full float-right' onClick={() => { copytext(item.site) }}>copy</button></td>
+                                        <td className='text-center py-2 border-white w-32'>{item.username} <button className='border-2 border-white-900 bg-green-200 rounded-full float-right' onClick={() => { copytext(item.username) }}>copy</button></td>
+                                        <td className='text-center py-2 border-white w-32'>{"*".repeat(item.password.length)} <button className='border-2 border-white-900 bg-green-200 rounded-full float-right' onClick={() => { copytext(item.password) }}>copy</button></td>
+                                        <td className='text-center py-2 border-white w-32'><button type="submit" onClick={() => { deletePassword(item.site) }}>Delete</button></td>
                                     </tr>
                                     _
                                 })}

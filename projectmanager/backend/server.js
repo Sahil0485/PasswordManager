@@ -1,7 +1,7 @@
 const express = require("express");
 const { MongoClient } = require("mongodb");
 const bodyparser = require("body-parser");
-const cors = require("cors")
+const cors = require("cors");
 require("dotenv").config();
 
 const url = "mongodb://localhost:27017";
@@ -22,7 +22,8 @@ app.get("/", async (req, res) => {
 
 app.post("/", async (req, res) => {
   const db = client.db(dbName);
-  const password = req.body;
+  const {password} = req.body;
+  console.log(password);
   const collection = db.collection("passwords");
   const findResult = await collection.insertOne(password);
   res.send({success: true, result: findResult});
