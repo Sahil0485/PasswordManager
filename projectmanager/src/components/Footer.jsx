@@ -9,7 +9,7 @@ const Footer = () => {
                 <span className="text-green-700">Op/&gt;</span>
             </div>
             <div>
-                Created with the support of codewithharry
+                Created with the support of Sunny Sharma
             </div>
             
         </div>
